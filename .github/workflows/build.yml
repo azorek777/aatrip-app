@@ -1,0 +1,54 @@
+name: Build APK
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+      KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Sprawdzenie sekretow
+        run: |
+          if [ -z "$KEYSTORE_BASE64" ] || [ -z "$KEYSTORE_PASSWORD" ]; then
+            echo "::error::Brakuje sekretow KEYSTORE_BASE64 lub KEYSTORE_PASSWORD (Settings > Secrets and variables > Actions)."
+            exit 1
+          fi
+
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - uses: gradle/actions/setup-gradle@v5
+        with:
+          gradle-version: "9.4.1"
+
+      - name: Przygotowanie klucza
+        run: echo "$KEYSTORE_BASE64" | base64 --decode > "$RUNNER_TEMP/aatrip.p12"
+
+      - name: Budowanie APK
+        env:
+          KEYSTORE_FILE: ${{ runner.temp }}/aatrip.p12
+          BUILD_NUMBER: ${{ github.run_number }}
+        run: gradle :app:assembleDebug --no-daemon
+
+      - name: Publikacja APK w Releases
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          APK="aatrip-0.1.${{ github.run_number }}.apk"
+          cp app/build/outputs/apk/debug/app-debug.apk "$APK"
+          gh release create "build-${{ github.run_number }}-${{ github.run_attempt }}" "$APK" \
+            --title "AA Trip 0.1.${{ github.run_number }}" \
+            --notes "Automatyczny build z commita ${{ github.sha }}" \
+            --target "${{ github.sha }}"
