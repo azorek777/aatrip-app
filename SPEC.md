@@ -21,12 +21,13 @@ rejestruje trasę (bez GPS) i liczy dystans, spalanie, zużyte paliwo i jego kos
 - Ręczne „Zatrzymaj” zamyka trasę na stałe.
 - Historia: data, czas, dystans, średnie spalanie, litry, koszt, cena za litr z dnia przejazdu.
 - Bez eksportu.
+- Ekran w aucie: najwyżej 3 wiersze, żeby nie trzeba było przewijać (odświeżanie cofa na górę).
 
 ## Technika
 - Kotlin, Android for Cars App Library 1.7.0, kategoria IOT.
 - Nagrywaniem zarządza usługa w telefonie, Android Auto jest ekranem i pilotem.
 - Dane trasy zapisywane na bieżąco.
-- Budowanie: GitHub Actions. Instalacja ze źródłem „Sklep Play” (KingInstaller lub UnknownAuto).
+- Budowanie: GitHub Actions. Instalacja ze źródłem „Sklep Play”: KingInstaller z Shizuku (działa).
 
 ## Dane z samochodu (do potwierdzenia na etapie 2)
 - Dystans: prędkość całkowana w czasie.
@@ -37,11 +38,11 @@ rejestruje trasę (bez GPS) i liczy dystans, spalanie, zużyte paliwo i jego kos
 - Średnie liczy aplikacja. Współczynnik korekcyjny ustawiany po tankowaniach „do pełna”.
 
 ## Etapy
-1. Aplikacja testowa: czy pojawia się w Android Auto i odświeża ekran.  <- TERAZ
-2. Połączenie BLE, odczyt danych, log diagnostyczny.
+1. Aplikacja testowa w Android Auto. ZALICZONE 2026-11-25.
+2. Połączenie BLE, odczyt danych, log diagnostyczny.  <- TERAZ
 3. Liczenie spalania i porównanie z deską rozdzielczą.
 4. Dashboard, historia, ustawienia.
 
 ## Otwarte
-- Lista czujników z Car Scanner (profil VW/Skoda).
-- Czy metoda instalacji działa na Nothing Phone (1).
+- Które parametry zgłasza sterownik (z logu etapu 2).
+- Czy potrzebne są bloki pomiarowe VW (TP 2.0).

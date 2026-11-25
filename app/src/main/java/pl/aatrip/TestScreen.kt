@@ -59,11 +59,12 @@ class TestScreen(carContext: CarContext) : Screen(carContext) {
         val cost = liters * 6.00
 
         // Tytuły wierszy muszą być stałe, wtedy Android Auto traktuje zmianę jako odświeżenie.
+        // Maksymalnie 3 wiersze: przy 4 ekran w aucie wymagał przewijania,
+        // a każde odświeżenie cofało go na samą górę.
         val pane = Pane.Builder()
-            .addRow(row("Dystans", format("%.2f km", distanceKm)))
+            .addRow(row("Dystans (dane testowe)", format("%.2f km", distanceKm)))
             .addRow(row("Spalanie: aktualne / średnie", "5,0 / 5,0 l/100 km"))
             .addRow(row("Paliwo i koszt", format("%.3f l / %.2f zł", liters, cost)))
-            .addRow(row("TEST (dane zmyślone)", if (running) "Licznik: $seconds s" else "Zatrzymany"))
             .addAction(
                 Action.Builder()
                     .setTitle(if (running) "Zatrzymaj" else "Start")
