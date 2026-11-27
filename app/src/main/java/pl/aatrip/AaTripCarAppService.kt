@@ -17,5 +17,5 @@ class AaTripCarAppService : CarAppService() {
 }
 
 class AaTripSession : Session() {
-    override fun onCreateScreen(intent: Intent): Screen = TestScreen(carContext)
+    override fun onCreateScreen(intent: Intent): Screen = CarDashboardScreen(carContext)
 }

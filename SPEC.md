@@ -16,7 +16,8 @@ rejestruje trasę (bez GPS) i liczy dystans, spalanie, zużyte paliwo i jego kos
 - W telefonie: przycisk „Connect” (połączenie ze skanerem) i ustawienia (cena za litr, próg wznowienia).
 - W aucie: dashboard oraz przyciski Start i Zatrzymaj. Nagrywania z telefonu nie ma.
 - Dashboard: dystans, spalanie aktualne, spalanie średnie, zużyte paliwo, koszt.
-- Po zgaszeniu silnika lub rozłączeniu Android Auto trasa od razu zapisuje się w historii.
+- Po zgaszeniu silnika (albo utracie skanera) trasa od razu widać w historii.
+  O przerwie decydują dane z OBD, więc samo zerwanie Android Auto przy pracującym silniku nie przerywa trasy.
 - Powrót w ciągu 15 minut (wartość do zmiany w ustawieniach) kontynuuje tę samą trasę.
 - Ręczne „Zatrzymaj” zamyka trasę na stałe.
 - Historia: data, czas, dystans, średnie spalanie, litry, koszt, cena za litr z dnia przejazdu.
@@ -29,20 +30,24 @@ rejestruje trasę (bez GPS) i liczy dystans, spalanie, zużyte paliwo i jego kos
 - Dane trasy zapisywane na bieżąco.
 - Budowanie: GitHub Actions. Instalacja ze źródłem „Sklep Play”: KingInstaller z Shizuku (działa).
 
-## Dane z samochodu (do potwierdzenia na etapie 2)
+## Dane z samochodu (potwierdzone logami)
+- Standardowe OBD, tryb 01, CAN 11 bit 500 kb/s. Brak PID 5E, 34, 44.
+- Używane: 0C obroty, 0D prędkość, 10 przepływ powietrza (MAF), 24 lambda, 4F skala lambdy (32).
 - Dystans: prędkość całkowana w czasie.
-- Paliwo, w kolejności preferencji:
-  1. zużycie w l/h lub dawka wtrysku z bloków pomiarowych VW (TP 2.0),
-  2. standardowy PID zużycia paliwa (015E), jeśli auto go obsługuje,
-  3. szacunek z przepływu powietrza i lambdy (plan awaryjny).
-- Średnie liczy aplikacja. Współczynnik korekcyjny ustawiany po tankowaniach „do pełna”.
+- Paliwo: l/h = MAF / (14,5 * lambda) * 3600 / 835. To szacunek.
+- Lambda 0 (zimny start): powietrze jest sumowane, a paliwo doliczane proporcją z reszty trasy
+  (zanim będzie dość danych, przy założonej lambdzie 3,5).
+- Lambda na końcu skali: odcięcie paliwa, spalanie 0.
+- Korekta spalania w ustawieniach, kalibrowana tankowaniami "do pełna".
+- Silnik wyłączony: obroty 0 lub brak odpowiedzi przez 8 s.
 
 ## Etapy
-1. Aplikacja testowa w Android Auto. ZALICZONE 2026-11-25.
-2. Połączenie BLE, odczyt danych, log diagnostyczny.  <- TERAZ
-3. Liczenie spalania i porównanie z deską rozdzielczą.
-4. Dashboard, historia, ustawienia.
+1. Aplikacja testowa w Android Auto. ZALICZONE.
+2. Połączenie BLE, odczyt danych, log diagnostyczny. ZALICZONE.
+3. Liczenie spalania, dashboard, historia, ustawienia.  <- TERAZ (test w aucie)
+4. Kalibracja i poprawki po jazdach.
 
 ## Otwarte
-- Które parametry zgłasza sterownik (z logu etapu 2).
-- Czy potrzebne są bloki pomiarowe VW (TP 2.0).
+- Wartość korekty spalania.
+- Czy Android pozwala uruchomić usługę przyciskiem w aucie przy zamkniętej aplikacji w telefonie.
+- Jak dobry jest szacunek podczas zimnego startu.

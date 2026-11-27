@@ -85,5 +85,18 @@ object Obd {
         return mafGramsPerSecond / (14.5 * lambda) * 3600.0 / 835.0
     }
 
+    /**
+     * Spalanie w l/h z MAF i surowych bajtów lambdy (PID 24).
+     * null: sonda nie podaje wyniku (zera po zimnym starcie).
+     * 0: lambda na końcu skali, czyli odcięcie paliwa przy hamowaniu silnikiem.
+     */
+    fun fuelRate(mafGramsPerSecond: Double, lambdaBytes: IntArray, maxRatio: Int): Double? {
+        if (lambdaBytes.size < 2) return null
+        val raw = lambdaBytes[0] * 256 + lambdaBytes[1]
+        if (raw == 0) return null
+        val ratio = lambda(lambdaBytes, maxRatio) ?: return 0.0
+        return dieselLitersPerHour(mafGramsPerSecond, ratio)
+    }
+
     fun num(value: Double): String = "%.2f".format(Locale.ROOT, value)
 }
